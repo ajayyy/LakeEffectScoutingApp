@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
     //if the schedule has been overridden
     boolean overrideSchedule;
+    private String[] tele;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,9 +155,9 @@ public class MainActivity extends AppCompatActivity {
         int messageAmount = prefs.getInt("messageAmount", 0);
         for (int i = 0; i < messageAmount; i++) {
             if (prefs.getString("message" + i, null) == null) {
-                messageAmount ++;
+                messageAmount++;
                 i++;
-                if(i > 150){
+                if (i > 150) {
                     break;
                 }
             } else {
@@ -215,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void restartListenerThread(){
+    public void restartListenerThread() {
         stopListenerThread();
 
         startListenerThread();
@@ -223,14 +224,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void stopListenerThread() {
         if (listenerThread != null) {
-            if(listenerThread.connectionThreadThreadClass != null){
+            if (listenerThread.connectionThreadThreadClass != null) {
                 try {
                     listenerThread.connectionThreadThreadClass.join();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            } else{
-                if(listenerThreadThreadClass != null) {
+            } else {
+                if (listenerThreadThreadClass != null) {
                     try {
                         listenerThreadThreadClass.join();
                     } catch (InterruptedException e) {
@@ -255,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
     StringBuilder data;
     StringBuilder labels;
 
-    public String getEventData(int page){
+    public String getEventData(int page) {
         StringBuilder events = new StringBuilder();
 
         ArrayList<Event> allEvents = pagerAdapter.autoPage.events;
@@ -263,11 +264,11 @@ public class MainActivity extends AppCompatActivity {
             allEvents = pagerAdapter.teleopPage.events;
         }
 
-        for(Event event : pagerAdapter.teleopPage.events){
+        for (Event event : pagerAdapter.teleopPage.events) {
             int location = event.location;
 
             //if reds on the left, and the robot is on blue alliance, or blue is on the left, and the robot is on the blue alliance
-            if((!side && alliance) || (side && !alliance)){
+            if ((!side && alliance) || (side && !alliance)) {
                 location = flipLocation(location);
             }
 
@@ -278,8 +279,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //will return the same location but on the other side of the field
-    public static int flipLocation(int location){
-        switch (location){
+    public static int flipLocation(int location) {
+        switch (location) {
             case 0:
                 return 11;
             case 1:
@@ -476,6 +477,7 @@ public class MainActivity extends AppCompatActivity {
             data.append(scoutName);
         }
 
+
         //Add UUID
         labels.append("UUID,\n");
         data.append("," + UUID.randomUUID() + "\n");
@@ -506,6 +508,10 @@ public class MainActivity extends AppCompatActivity {
                 data.append(((CheckBox) v).isChecked() + ",");
                 labels.append(getName(v) + ",");
             }
+            if (v instanceof SeekBar) {
+                data.append(((SeekBar) v).getProgress() + ",");
+                labels.append(getName(v) + ",");
+            }
             if (v instanceof Counter) {
                 data.append(((Counter) v).count + ",");
                 labels.append(getName(v) + ",");
@@ -527,7 +533,7 @@ public class MainActivity extends AppCompatActivity {
             if (v instanceof RadioGroup) {
                 String selected = getName(v.findViewById(((RadioGroup) v).getCheckedRadioButtonId()));
                 //Game-specific cases
-                switch(selected){
+                switch (selected) {
                     //Baseline radiogroup
                     case "Baseline Success":
                         data.append("True,");
@@ -556,7 +562,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     //Radio button ID will be result output in data
                     default:
-                         data.append(selected + ",");
+                        data.append(selected + ",");
                         break;
                 }
 //                data.append(((RadioGroup) v).getCheckedRadioButtonId() + ",");
@@ -573,7 +579,7 @@ public class MainActivity extends AppCompatActivity {
     //First letter capital
 
     String getName(View v) {
-        if (v == null || v.getId()==-1) return "NULL";
+        if (v == null || v.getId() == -1) return "NULL";
         String id = getResources().getResourceEntryName(v.getId());
         String out = id.substring(0, 1).toUpperCase() + id.substring(1);
         for (int i = 1; i < out.length(); i++) {
@@ -644,7 +650,8 @@ public class MainActivity extends AppCompatActivity {
             teleOpEventsF.close();
 
             //save to file
-            if (newfile) out.append(new String(Base64.decode(data[1], Base64.DEFAULT), Charset.forName("UTF-8")));
+            if (newfile)
+                out.append(new String(Base64.decode(data[1], Base64.DEFAULT), Charset.forName("UTF-8")));
             out.append(new String(Base64.decode(data[0], Base64.DEFAULT), Charset.forName("UTF-8")));
 
             String fulldata = "";
@@ -653,9 +660,9 @@ public class MainActivity extends AppCompatActivity {
                     autoEvents = "nodata";
                 }
                 fulldata = robotNum + ":" + data[0] + ":" + autoEvents + ":" + teleOpEvents;
-            } else if(!autoEvents.equals("")) {
+            } else if (!autoEvents.equals("")) {
                 fulldata = robotNum + ":" + data[0] + ":" + autoEvents;
-            }else {
+            } else {
                 fulldata = robotNum + ":" + data[0];
             }
 
@@ -772,7 +779,7 @@ public class MainActivity extends AppCompatActivity {
                         alert(false);
                     }
                     if (item.getItemId() == R.id.resetPendingMessages) {
-                        for(int i = 0; i< pendingMessages.size(); i++){
+                        for (int i = 0; i < pendingMessages.size(); i++) {
                             pendingMessages.remove(i);
                         }
 
@@ -1013,12 +1020,12 @@ public class MainActivity extends AppCompatActivity {
 
                 //set spinners to previous values
                 prefs = getSharedPreferences("robotAlliance", MODE_PRIVATE);
-                if(prefs.getInt("day", -1) == day && prefs.getInt("month", -1) == month && prefs.getInt("year", -1) == year){
+                if (prefs.getInt("day", -1) == day && prefs.getInt("month", -1) == month && prefs.getInt("year", -1) == year) {
                     robotAlliance.setSelection(prefs.getInt("robotAlliance", 0));
                 }
 
                 prefs = getSharedPreferences("viewingSide", MODE_PRIVATE);
-                if(prefs.getInt("day", -1) == day && prefs.getInt("month", -1) == month && prefs.getInt("year", -1) == year){
+                if (prefs.getInt("day", -1) == day && prefs.getInt("month", -1) == month && prefs.getInt("year", -1) == year) {
                     viewingSide.setSelection(prefs.getInt("viewingSide", 0));
                 }
 
@@ -1049,7 +1056,7 @@ public class MainActivity extends AppCompatActivity {
         int newUserID = userIDSpinner.getSelectedItemPosition() - 1;
 
         //it's moved to the default, no need to change anything
-        if(newUserID == -1) {
+        if (newUserID == -1) {
             return;
         }
 
@@ -1098,7 +1105,7 @@ public class MainActivity extends AppCompatActivity {
         EditText robotNumInput = linearLayout.findViewById(R.id.robotNumber);
         Spinner robotAlliance = linearLayout.findViewById(R.id.robotAlliance);
 
-        if (round >= schedules.get(MainActivity.this.userID).robots.size() || round < 0){
+        if (round >= schedules.get(MainActivity.this.userID).robots.size() || round < 0) {
             //The match number is too high
             runOnUiThread(new Thread() {
                 public void run() {
@@ -1166,7 +1173,7 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<String> userNames = new ArrayList<>();
         userNames.add("Please choose a name");
-        for (UserData userData : schedules){
+        for (UserData userData : schedules) {
             userNames.add(userData.userName);
         }
 
@@ -1185,7 +1192,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //when the ok button on the alert is pressed
-    public void onClickOkButton(DialogInterface dialog, boolean overrideRobotNumberCheck){
+    public void onClickOkButton(DialogInterface dialog, boolean overrideRobotNumberCheck) {
         //get date details
         final int year = Calendar.getInstance().get(Calendar.YEAR);
         final int month = Calendar.getInstance().get(Calendar.MONTH);
@@ -1204,7 +1211,7 @@ public class MainActivity extends AppCompatActivity {
         Spinner viewingSide = linearLayout.findViewById(R.id.viewingSide);
         Spinner userID = linearLayout.findViewById(R.id.userID);
 
-        if(robotAlliance.getSelectedItemPosition() == 0 || viewingSide.getSelectedItemPosition() == 0){
+        if (robotAlliance.getSelectedItemPosition() == 0 || viewingSide.getSelectedItemPosition() == 0) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -1293,32 +1300,41 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public static boolean arrayContains(String[] array, String search){
-        for(String string : array){
+    public static boolean arrayContains(String[] array, String search) {
+        for (String string : array) {
             //hi
-            if(string.equals(search)){
+            if (string.equals(search)) {
                 return true;
             }
         }
         return false;
     }
 
-    public static boolean arrayContains(int[] array, int search){
-        for(int num : array){
-            if(num == search){
+    public static boolean arrayContains(int[] array, int search) {
+        for (int num : array) {
+            if (num == search) {
                 return true;
             }
         }
         return false;
     }
 
-     public static void startNotificationAlarm(Context context) {
+    public static boolean arrayContains(ArrayList<Integer> array, Integer search) {
+        for (Integer num : array) {
+            if (num == search) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void startNotificationAlarm(Context context) {
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent i = new Intent (context, PendingNotification.class);
+        Intent i = new Intent(context, PendingNotification.class);
         PendingIntent pending = PendingIntent.getBroadcast(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
         Date date = Calendar.getInstance().getTime();
         System.out.println(date.toString());
-        alarm.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+1000*60*20, pending);
+        alarm.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 1000 * 60 * 20, pending);
     }
 
 }

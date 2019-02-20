@@ -43,6 +43,10 @@ public class FieldUIPage extends Fragment implements View.OnClickListener {
     //All the events made by the person this matchNumber
     ArrayList<Event> events = new ArrayList<Event>();
 
+    //All the positions that have a hatch dropped off in them
+    ArrayList<Integer> filledHatchPositions = new ArrayList<Integer>();
+
+
     Vibrator vibrator;
     boolean hasVibrator;
 
@@ -119,6 +123,7 @@ public class FieldUIPage extends Fragment implements View.OnClickListener {
                     location += "the field";
                 }
 
+
                 new AlertDialog.Builder(getContext())
                         .setTitle("Confirm")
                         .setMessage("Are you sure you would like to undo the action that said " + getActionText(event.eventType) + location + "?")
@@ -172,14 +177,25 @@ public class FieldUIPage extends Fragment implements View.OnClickListener {
             action += "the field";
         }
 
-        if (eventType != -1) {
-            final String a = action;
-            event = new Event(eventType, field.selected, System.currentTimeMillis(), 0);
-            if (hasVibrator) {
-                addEvent(event, action, true);
-            } else {
-                addEvent(event, a, true);
+        if (MainActivity.arrayContains(filledHatchPositions, field.selected) && eventType == 2){
+            new AlertDialog.Builder(getContext())
+                    .setTitle("Invalid")
+                    .setMessage("You put a hatch where there was a hatch already!")
+                    .setPositiveButton("Ok", null)
+                    .setNegativeButton("Well then", null)
+                    .create()
+                    .show();
+        }else{
+            if (eventType != -1) {
+                final String a = action;
+                event = new Event(eventType, field.selected, System.currentTimeMillis(), 0);
+                if (hasVibrator) {
+                    addEvent(event, action, true);
+                } else {
+                    addEvent(event, a, true);
+                }
             }
+            System.out.println(filledHatchPositions);
         }
     }
 
