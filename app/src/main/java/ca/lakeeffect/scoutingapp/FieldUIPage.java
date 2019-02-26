@@ -177,14 +177,26 @@ public class FieldUIPage extends Fragment implements View.OnClickListener {
             action += "the field";
         }
 
-        if (MainActivity.arrayContains(filledHatchPositions, field.selected) && eventType == 2){
+        if (MainActivity.arrayContains(filledHatchPositions, field.selected) && eventType == 3 && field.selected != -1){
             new AlertDialog.Builder(getContext())
-                    .setTitle("Invalid")
-                    .setMessage("You put a hatch where there was a hatch already!")
-                    .setPositiveButton("Ok", null)
-                    .setNegativeButton("Well then", null)
+                    .setTitle("You've already placed something here!")
+                    .setMessage("Would you like to overwrite this hatch?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            for(int i = 0; i < events.size(); i++){
+                                if(events.get(i).location == field.selected && events.get(i).eventType == 3){
+                                    events.remove(i);
+                                    break;
+                                }
+                            }
+                            events.add(new Event(3, field.selected, System.currentTimeMillis(), 0));
+                        }
+                    })
+                    .setNegativeButton("No", null)
                     .create()
                     .show();
+            System.out.println("was already there");
+            System.out.println(filledHatchPositions);
         }else{
             if (eventType != -1) {
                 final String a = action;
@@ -194,7 +206,12 @@ public class FieldUIPage extends Fragment implements View.OnClickListener {
                 } else {
                     addEvent(event, a, true);
                 }
+                if(eventType == 3){
+                    filledHatchPositions.add((Integer) field.selected);
+                }
             }
+            System.out.println("new");
+            System.out.println(eventType);
             System.out.println(filledHatchPositions);
         }
     }
